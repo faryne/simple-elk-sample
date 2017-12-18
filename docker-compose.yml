@@ -1,0 +1,35 @@
+version: "3.3"
+
+services:
+    elasticsearch:
+        image: my-elasticsearch:latest
+        container_name: "my-elasticsearch"
+        ports:
+            - "9200:9200"
+            - "9300:9300"
+        expose:
+            - 9200
+            - 9300
+
+    logstash:
+        image: my-logstash:latest
+        container_name: "my-logstash"
+        links: 
+            - elasticsearch
+        depends_on:
+            - elasticsearch
+        tmpfs:
+            - "/Users/fg/lunar/apollo/storage/logs/laravel.log"
+
+
+    kibana:
+        image: my-kibana:latest
+        container_name: "my-kibana"
+        ports:
+            - "5601:5601"
+        expose:
+            - "5601"
+        links: 
+            - elasticsearch
+        depends_on:
+            - elasticsearch
