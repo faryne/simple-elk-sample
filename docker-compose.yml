@@ -16,10 +16,16 @@ services:
         container_name: "my-logstash"
         links: 
             - elasticsearch
+        expose:
+            - 5044
+            - 9600
         depends_on:
             - elasticsearch
-        tmpfs:
-            - "/Users/fg/lunar/apollo/storage/logs/laravel.log"
+        volumes:
+            - type: bind
+              source: /Users/fg/lunar/apollo/storage/logs
+              target: /laravel-log
+
 
 
     kibana:
