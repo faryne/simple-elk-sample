@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
     elasticsearch:
-        image: my-elasticsearch:latest
+        image: docker.elastic.co/elasticsearch/elasticsearch:6.1.0
         container_name: "my-elasticsearch"
         ports:
             - "9200:9200"
@@ -10,32 +10,37 @@ services:
         expose:
             - 9200
             - 9300
+        environment:
+            ES_JAVA_OPTS: "-Xms1g -Xmx1g"
 
     logstash:
-        image: my-logstash:latest
+        image: docker.elastic.co/logstash/logstash:6.1.0
         container_name: "my-logstash"
         links: 
             - elasticsearch
         expose:
             - 5044
             - 9600
+        ports: 
+            - "5044:5044"
+            - "9600:9600"
         depends_on:
             - elasticsearch
-        volumes:
-            - type: bind
-              source: /Users/fg/lunar/apollo/storage/logs
-              target: /laravel-log
-
-
+        # volumes:
+        #     - "/Users/fg/lunar/apollo/storage/logs/laravel.log:/laravel-log/laravel.log:ro"
+        #     - "./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
+        #     - "./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml:ro"
 
     kibana:
-        image: my-kibana:latest
+        image: docker.elastic.co/kibana/kibana:6.1.0
         container_name: "my-kibana"
         ports:
             - "5601:5601"
         expose:
-            - "5601"
+            - 5601
         links: 
             - elasticsearch
         depends_on:
             - elasticsearch
+        volumes:
+            - "./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:ro"
